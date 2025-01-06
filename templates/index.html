@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Agent</h1>
+        <textarea id="userInput" placeholder="Type your message here..."></textarea>
+        <button id="sendButton">Send</button>
+        <div class="response" id="responseBox">AI response will appear here...</div>
+    </div>
+
+    <script>
+        document.getElementById("sendButton").addEventListener("click", async () => {
+            const userInput = document.getElementById("userInput").value;
+            const responseBox = document.getElementById("responseBox");
+
+            if (!userInput.trim()) {
+                responseBox.textContent = "Please enter a message.";
+                return;
+            }
+
+            responseBox.textContent = "Waiting for response...";
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: userInput })
+                });
+
+                const data = await response.json();
+
+                if (data.response) {
+                    responseBox.textContent = data.response;
+                } else if (data.error) {
+                    responseBox.textContent = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                responseBox.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
